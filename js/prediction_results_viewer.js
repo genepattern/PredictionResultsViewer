@@ -19,8 +19,11 @@ function loadOdfFile(pObj) {
     gpLib.rangeRequestsAllowed(odfURL, {
         successCallBack: function(acceptRanges) {
             if(acceptRanges) {
-                //get the third data row in order to get the sample names
-                getOdfFileContentsUsingByteRequests(odfURL, -1, 0, 1000000, undefined, headers, successCallback, errorCallback);
+                gpLib.getDataAtUrl(odfURL, {
+                    headers: headers,
+                    successCallBack: successCallback,
+                    failCallBack: errorCallback
+                });
             }
             else {
                 gpLib.getDataAtUrl(odfURL, {
@@ -38,30 +41,6 @@ function loadOdfFile(pObj) {
             });
         }
     });
-}
-
-function getOdfFileContentsUsingByteRequests(fileURL, maxNumLines, startBytes, byteIncrement, fileContents, headers, successCallback, errorCallback) {
-    if (fileContents != undefined) {
-        cmsOdfContents = cmsOdfContents.concat(fileContents);
-    }
-
-    if (startBytes != undefined && startBytes != null && startBytes >= 0 && fileContents != "") {
-        gpLib.readBytesFromURL(fileURL, maxNumLines, startBytes, byteIncrement, {
-            headers: headers,
-            successCallBack: getOdfFileContentsUsingByteRequests,
-            failCallBack: errorCallback
-        });
-
-    }
-    else {
-        if (cmsOdfContents != undefined && cmsOdfContents != null && cmsOdfContents.length > 0) {
-            successCallback(cmsOdfContents);
-            cmsOdfContents = null;
-        }
-        else {
-            errorCallback("data is empty");
-        }
-    }
 }
 
 function addTableData(data) {
@@ -292,21 +271,19 @@ requirejs(["jquery", "plotly", "gp_util", "gp_lib", "DataTables/datatables.min",
 
     var url = requestParams["prediction.results.file"][0];
 
-    // Waiting screen
-
     // Load the prediction results ODF
     loadOdfFile({
         url: url,
         gpLib: gpLib,
         success: function(raw_data) {
-            console.log(raw_data);
-
             // Parse the data
             var data = gpLib.parseODF(raw_data, "Prediction Results");
-            console.log(data);
 
             // Process the data
             data = processData(data);
+
+            // Hide the loading screen
+            $("#loading").hide();
 
             // Assemble the plot
             addPlotData(data, Plotly);
@@ -327,6 +304,7 @@ requirejs(["jquery", "plotly", "gp_util", "gp_lib", "DataTables/datatables.min",
             });
         },
         error: function(message) {
+            $("#loading").hide();
             $("#error-message")
                 .append("Failed to load data: " + message)
                 .dialog();
