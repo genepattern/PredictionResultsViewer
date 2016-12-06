@@ -12,28 +12,65 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <title>IGV - Integrative Genomics Viewer</title>
+    <title>Prediction Results Viewer</title>
 
-    <!-- jQuery JS-->
-    <script type="text/javascript" src="jquery/jquery.min.js"></script>
+    <!-- Load require.js -->
+    <script data-main="js/prediction_results_viewer" src="js/require.js"></script>
 
-    <!-- jQuery UI CSS-->
-    <link rel="stylesheet" type="text/css" href="jquery/jquery-ui.css"/>
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css"/>
 
-    <!-- jQuery UI-->
-    <script type="text/javascript" src="jquery/jquery-ui.min.js"></script>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="js/DataTables/datatables.min.css"/>
 
-    <!-- Plotly -->
-    <script type="text/javascript" src="plotly/plotly.min.js" charset="utf-8"></script>
-
-    <script src="js/prediction_results_viewer.js"></script>
+    <!-- PredictionResultsViewer CSS -->
     <link rel="stylesheet" type="text/css" href="css/prediction_results_viewer.css">
 
 </head>
 
 <body>
 
-<div id="plotDiv"> </div>
+<div id="error-message"></div>
+
+<div id="plot-div"></div>
+
+<div id="middle-div" style="display: none;">
+    <div class="middle-left">
+        <div>
+            <label class="middle-label">Absolute Error</label> <span id="absolute-error"></span>
+        </div>
+        <div>
+            <label class="middle-label">No Calls</label> <span id="no-calls"></span>
+        </div>
+        <div>
+            <label class="middle-label">ROC Error</label> <span id="roc-error"></span>
+        </div>
+        <div>
+            <label class="middle-label">Predictor</label> <span id="predictor"></span>
+        </div>
+        <div>
+            <label class="middle-label">Features</label> <span id="features"></span>
+        </div>
+    </div>
+    <div class="middle-right">
+        xxx
+    </div>
+</div>
+
+<div id="table-div" style="display: none;">
+    <table class="display">
+        <thead>
+            <tr>
+                <td>Samples</td>
+                <td>True Class</td>
+                <td>Predicted Class</td>
+                <td>Confidence</td>
+                <td>Correct</td>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 
 </body>
 </html>

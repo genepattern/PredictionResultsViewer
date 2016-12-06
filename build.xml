@@ -16,6 +16,7 @@
         <zipfileset dir="css" prefix="css" includes="*.css"/>
         <zipfileset dir="jquery" prefix="jquery" includes="*"/>
         <zipfileset dir="plotly" prefix="plotly" includes="*"/>
+        <zipfileset dir="DataTables" prefix="DataTables" includes="*"/>
     </zip>
     <antcall target="postzip"/>
 </target>

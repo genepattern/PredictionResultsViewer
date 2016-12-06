@@ -1,0 +1,29 @@
+.middle-left {
+    width: 48%;
+    float: left;
+    padding-top: 40px;
+    padding-bottom: 20px;
+    font-family: sans-serif;
+}
+
+.middle-left > div {
+    margin-bottom: 5px;
+}
+
+.middle-left > div > span {
+    display: inline-block;
+}
+
+.middle-right {
+    width: 48%;
+    float: right;
+    padding-top: 40px;
+    padding-bottom: 20px;
+}
+
+.middle-label {
+    width: 120px;
+    font-weight: bold;
+    display: inline-block;
+    vertical-align: top;
+}
