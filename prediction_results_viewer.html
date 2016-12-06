@@ -53,6 +53,9 @@
         <div>
             <label class="middle-label">Features</label> <span id="features"></span>
         </div>
+        <div>
+            <label class="middle-label">No Call Threshold</label> <input id="threshold-value" type="number" pattern="[0-9]+(\.[0-9]{0,2})?%?" value="0.0"/> <button id="update-button">Update</button>
+        </div>
     </div>
     <div class="middle-right">
         <table id="confusion-matrix" class="display">
@@ -86,11 +89,11 @@
     <table class="display">
         <thead>
             <tr>
-                <td>Samples</td>
-                <td>True Class</td>
-                <td>Predicted Class</td>
-                <td>Confidence</td>
-                <td>Correct</td>
+                <th>Samples</th>
+                <th>True Class</th>
+                <th>Predicted Class</th>
+                <th>Confidence</th>
+                <th>Correct</th>
             </tr>
         </thead>
         <tbody></tbody>

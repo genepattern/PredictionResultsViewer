@@ -11,12 +11,12 @@
     <antcall target="prezip"/>
     <zip destfile="${dest.dir}/${ant.project.name}.zip" whenempty="fail" defaultexcludes="true">
         <fileset dir="." includes="manifest, doc.html"/>
-        <fileset dir="." includes="igv_web.html"/>
-        <zipfileset dir="js" prefix="js" includes="*.js"/>
+        <fileset dir="." includes="prediction_results_viewer.html, ajax.gif"/>
+        <zipfileset dir="js" prefix="js" includes="*"/>
         <zipfileset dir="css" prefix="css" includes="*.css"/>
-        <zipfileset dir="jquery" prefix="jquery" includes="*"/>
-        <zipfileset dir="plotly" prefix="plotly" includes="*"/>
-        <zipfileset dir="DataTables" prefix="DataTables" includes="*"/>
+        <zipfileset dir="js/DataTables" prefix="js/DataTables" includes="*"/>
+        <zipfileset dir="js/DataTables/DataTables-1.10.12" prefix="js/DataTables/DataTables-1.10.12" includes="*"/>
+        <zipfileset dir="js/DataTables/jQuery-2.2.3" prefix="js/DataTables/jQuery-2.2.3" includes="*"/>
     </zip>
     <antcall target="postzip"/>
 </target>

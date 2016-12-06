@@ -43,7 +43,12 @@ function loadOdfFile(pObj) {
     });
 }
 
-function addTableData(data) {
+function callLabel(correct, confidence, callThreshold) {
+    if (confidence < callThreshold) return "No Call";
+    return correct === "true" ? "Y" : "Error";
+}
+
+function addTableData(data, callThreshold) {
     var table_div = $("#table-div");
     var tbody = table_div.find("tbody");
 
@@ -53,7 +58,7 @@ function addTableData(data) {
         var true_class = data["True Class"][i];
         var predicted_class = data["Predicted Class"][i];
         var confidence = Math.abs(data["Confidence"][i]);
-        var correct = data["Correct?"][i] === "true" ? "Y" : "Error";
+        var correct = callLabel(data["Correct?"][i], confidence, callThreshold);
 
         var row = $("<tr>");
 
@@ -84,13 +89,12 @@ function addTableData(data) {
     table_div.show();
 }
 
-function addMiddleData(data) {
+function addMiddleData(data, Plotly) {
     var absolute_error = (data["NumErrors"] / data["DataLines"]).toFixed(5) +
         "<br/>(Right " + data["NumCorrect"] + ", Wrong " + data["NumErrors"] + ")";
-    var no_calls = data["DataLines"] - data["NumErrors"] - data["NumCorrect"];
 
     $("#absolute-error").append(absolute_error);
-    $("#no-calls").append(no_calls);
+    $("#no-calls").append("0.00000 (0 skipped)");
     $("#roc-error").append(data[""]);
     $("#predictor").append(data["PredictorModel"]);
     $("#features").append(data["NumFeatures"]);
@@ -126,11 +130,52 @@ function addMiddleData(data) {
     $("#predicted-1-true-2").text((errors[1] / class1_count).toFixed(5) + " (" + errors[1] + ")");
     $("#predicted-2-true-1").text((errors[0] / class2_count).toFixed(5) + " (" + errors[0] + ")");
 
+    $("#update-button").click(function() {
+        var threshold = $("#threshold-value").val();
+        addPlotData(data, Plotly, threshold);
+        updateTable(data, threshold);
+    });
+
     var middle_div = $("#middle-div");
     middle_div.show();
 }
 
-function addPlotData(data, Plotly) {
+function updateTable(data, threshold) {
+    var table_div = $("#table-div");
+    var tbody = table_div.find("tbody");
+    var rows = tbody.find("tr");
+    var no_calls = 0;
+    var total = 0;
+    var correct = 0;
+    var error = 0;
+
+    rows.each(function(i, e) {
+        var cells = $(e).find("td");
+        var true_class = $(cells[1]).text();
+        var predicted_class = $(cells[2]).text();
+        var confidence = parseFloat($(cells[3]).text());
+        total++;
+
+        if (confidence < threshold) {
+            $(cells[4]).text("No Call");
+            no_calls++;
+        }
+        else {
+            var is_correct = true_class === predicted_class;
+            if (is_correct) correct++;
+            else error++;
+            var label = is_correct ? "Y" : "Error";
+            $(cells[4]).text(label);
+        }
+    });
+
+    $("#no-calls").text((no_calls / total).toFixed(5) + " (" + no_calls + " skipped)");
+    $("#absolute-error").text((error / (correct + error)).toFixed(5) + " (" + correct + " Right, " + error + " Wrong)");
+}
+
+function addPlotData(data, Plotly, callThreshold) {
+    $("#plot-div").empty();
+
     var layout = {
         xaxis: {
             showgrid: true,
@@ -191,11 +236,36 @@ function addPlotData(data, Plotly) {
         name: 'AML'
     };
 
+    var call_threshold_pos = {
+        x: [data["Samples"][0], data["Samples"][data["Samples"].length-1]],
+        y: [callThreshold, callThreshold],
+        mode: 'lines',
+        type: 'scatter',
+        name: 'Call Threshold',
+        line: {
+            color: 'rgb(0, 128, 0)',
+            width: 1
+        }
+    };
+
+    var call_threshold_neg = {
+        x: [data["Samples"][0], data["Samples"][data["Samples"].length-1]],
+        y: [callThreshold * -1, callThreshold * -1],
+        mode: 'lines',
+        type: 'scatter',
+        name: 'Call Threshold',
+        line: {
+            color: 'rgb(0, 128, 0)',
+            width: 1
+        },
+        showlegend: false
+    };
+
     console.log(first_class_y);
     console.log(second_class_y);
 
     // Plot the data
-    var plot_data = [first_class, second_class];
+    var plot_data = [first_class, second_class, call_threshold_pos, call_threshold_neg];
     Plotly.newPlot('plot-div', plot_data, layout);
     setTimeout(function() {
         $("#plot-div").find(".main-svg:first").css("height", 420);
@@ -286,10 +356,10 @@ requirejs(["jquery", "plotly", "gp_util", "gp_lib", "DataTables/datatables.min",
             $("#loading").hide();
 
             // Assemble the plot
-            addPlotData(data, Plotly);
+            addPlotData(data, Plotly, 0);
 
             // Assemble the middle
-            addMiddleData(data);
+            addMiddleData(data, Plotly);
             $("#confusion-matrix").DataTable({
                 "paging":   false,
                 "ordering": false,
@@ -298,7 +368,7 @@ requirejs(["jquery", "plotly", "gp_util", "gp_lib", "DataTables/datatables.min",
             });
 
             // Assemble the table
-            addTableData(data);
+            addTableData(data, 0);
             $("#table-div table").DataTable({
                 "pageLength": 50
             });
