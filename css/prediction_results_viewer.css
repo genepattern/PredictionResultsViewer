@@ -27,3 +27,7 @@
     display: inline-block;
     vertical-align: top;
 }
+
+html, body {
+    overflow-x: hidden;
+}

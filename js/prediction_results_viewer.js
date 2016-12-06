@@ -116,6 +116,37 @@ function addMiddleData(data) {
     $("#predictor").append(data["PredictorModel"]);
     $("#features").append(data["NumFeatures"]);
 
+    // Build the confusion matrix
+    var class1 = data["Classes"][0];
+    var class2 = data["Classes"][1];
+    $("#predicted-1").text("Predicted " + class1);
+    $("#predicted-2").text("Predicted " + class2);
+    $("#true-1").text("True " + class1);
+    $("#true-2").text("True " + class2);
+
+    var samples = data["Samples"].length;
+    var trues = [0, 0];
+    var errors = [0, 0];
+    var class1_count = 0;
+    var class2_count = 0;
+    for (var i = 0; i < samples; i++) {
+        var predicted_class = data["Predicted Class"][i];
+        var true_class = data["True Class"][i];
+        if (predicted_class === true_class) {
+            // True
+            predicted_class === class1 ? trues[0]++ : trues[1]++;
+        }
+        else {
+            // Error
+            predicted_class === class1 ? errors[0]++ : errors[1]++;
+        }
+        true_class === class1 ? class1_count++ : class2_count++;
+    }
+    $("#predicted-1-true-1").text((trues[0] / class1_count).toFixed(5) + " (" + trues[0] + ")");
+    $("#predicted-2-true-2").text((trues[1] / class2_count).toFixed(5) + " (" + trues[1] + ")");
+    $("#predicted-1-true-2").text((errors[1] / class1_count).toFixed(5) + " (" + errors[1] + ")");
+    $("#predicted-2-true-1").text((errors[0] / class2_count).toFixed(5) + " (" + errors[0] + ")");
+
     var middle_div = $("#middle-div");
     middle_div.show();
 }
@@ -282,10 +313,18 @@ requirejs(["jquery", "plotly", "gp_util", "gp_lib", "DataTables/datatables.min",
 
             // Assemble the middle
             addMiddleData(data);
+            $("#confusion-matrix").DataTable({
+                "paging":   false,
+                "ordering": false,
+                "info":     false,
+                "filter":   false
+            });
 
             // Assemble the table
             addTableData(data);
-            $("#table-div table").DataTable();
+            $("#table-div table").DataTable({
+                "pageLength": 50
+            });
         },
         error: function(message) {
             $("#error-message")
