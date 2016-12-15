@@ -90,15 +90,6 @@ function addTableData(data, callThreshold) {
 }
 
 function addMiddleData(data, Plotly) {
-    var absolute_error = (data["NumErrors"] / data["DataLines"]).toFixed(5) +
-        "<br/>(Right " + data["NumCorrect"] + ", Wrong " + data["NumErrors"] + ")";
-
-    $("#absolute-error").append(absolute_error);
-    $("#no-calls").append("0.00000 (0 skipped)");
-    $("#roc-error").append(data[""]);
-    $("#predictor").append(data["PredictorModel"]);
-    $("#features").append(data["NumFeatures"]);
-
     // Build the confusion matrix
     var class1 = data["Classes"][0];
     var class2 = data["Classes"][1];
@@ -130,6 +121,16 @@ function addMiddleData(data, Plotly) {
     $("#predicted-1-true-2").text((errors[1] / class1_count).toFixed(5) + " (" + errors[1] + ")");
     $("#predicted-2-true-1").text((errors[0] / class2_count).toFixed(5) + " (" + errors[0] + ")");
 
+    var absolute_error = (data["NumErrors"] / data["DataLines"]).toFixed(5) +
+        "<br/>(Right " + data["NumCorrect"] + ", Wrong " + data["NumErrors"] + ")";
+    var roc_error = (((errors[1]/(errors[1] + trues[0])) + (errors[0]/(errors[0] + trues[1]))) / 2).toFixed(5);
+
+    $("#absolute-error").append(absolute_error);
+    $("#no-calls").append("0.00000 (0 skipped)");
+    $("#roc-error").append(roc_error);
+    $("#predictor").append(data["PredictorModel"]);
+    $("#features").append(data["NumFeatures"]);
+
     $("#update-button").click(function() {
         var threshold = $("#threshold-value").val();
         addPlotData(data, Plotly, threshold);
@@ -149,6 +150,13 @@ function updateTable(data, threshold) {
     var correct = 0;
     var error = 0;
 
+    var class1 = data["Classes"][0];
+    var class2 = data["Classes"][1];
+    var trues = [0, 0];
+    var errors = [0, 0];
+    var class1_count = 0;
+    var class2_count = 0;
+
     rows.each(function(i, e) {
         var cells = $(e).find("td");
         var true_class = $(cells[1]).text();
@@ -166,11 +174,30 @@ function updateTable(data, threshold) {
             else error++;
             var label = is_correct ? "Y" : "Error";
             $(cells[4]).text(label);
-        }
+
+            // Confusion Matrix stuff
+            if (predicted_class === true_class) {
+                // True
+                predicted_class === class1 ? trues[0]++ : trues[1]++;
+            }
+            else {
+                // Error
+                predicted_class === class1 ? errors[0]++ : errors[1]++;
+            }
+            true_class === class1 ? class1_count++ : class2_count++;
+            }
     });
 
     $("#no-calls").text((no_calls / total).toFixed(5) + " (" + no_calls + " skipped)");
     $("#absolute-error").text((error / (correct + error)).toFixed(5) + " (" + correct + " Right, " + error + " Wrong)");
+
+    $("#predicted-1-true-1").text((trues[0] / class1_count).toFixed(5) + " (" + trues[0] + ")");
+    $("#predicted-2-true-2").text((trues[1] / class2_count).toFixed(5) + " (" + trues[1] + ")");
+    $("#predicted-1-true-2").text((errors[1] / class1_count).toFixed(5) + " (" + errors[1] + ")");
+    $("#predicted-2-true-1").text((errors[0] / class2_count).toFixed(5) + " (" + errors[0] + ")");
+
+    var roc_error = (((errors[1]/(errors[1] + trues[0])) + (errors[0]/(errors[0] + trues[1]))) / 2).toFixed(5);
+    $("#roc-error").text(roc_error);
 }
 
 function addPlotData(data, Plotly, callThreshold) {
