@@ -277,7 +277,7 @@ var gpLib = function($, jqueryui, cookie) {
         }
 
         //Now check that this is a CMS ODF file
-        if(data["Model"].length === 0 || data["Model"] !== modelType)
+        if(data["Model"].length === 0 || data["Model"].trim() !== modelType)
         {
             throw new Error("Invalid ODF model. Found " + data["Model"] + " but expected " + modelType);
         }
