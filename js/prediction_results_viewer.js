@@ -226,8 +226,15 @@ function addPlotData(data, Plotly, callThreshold) {
             y: 0.5,
             yref: 'paper'
         },
-        height: 400,
+        height: 350,
         hovermode: 'closest'
+    };
+
+    var config = {
+        displayModeBar: false,
+        modeBarButtonsToRemove: ['sendDataToCloud', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'hoverClosestCartesian', 'hoverCompareCartesian', 'autoScale2d', 'resetScale2d'],
+        displaylogo: false,
+        showTips: true
     };
 
     // Create the data points by class
@@ -293,10 +300,75 @@ function addPlotData(data, Plotly, callThreshold) {
 
     // Plot the data
     var plot_data = [first_class, second_class, call_threshold_pos, call_threshold_neg];
-    Plotly.newPlot('plot-div', plot_data, layout);
+    Plotly.newPlot('plot-div', plot_data, layout, config);
     setTimeout(function() {
-        $("#plot-div").find(".main-svg:first").css("height", 420);
+        var plotSVG = $("#plot-div").find(".main-svg:first");
+        plotSVG.attr("height", 425);
+        plotSVG.css("height", 425);
+        plotSVG.parent().css("height", 400);
+        addDownloadButton();
     }, 10);
+}
+
+function addDownloadButton() {
+    var plotDiv = $("#plot-div");
+
+    // Add the button
+    var downloadButton = $('<button><i class="fa fa-download" aria-hidden="true"></i> PNG</button>')
+        .css("position", "absolute")
+        .css("right", 10)
+        .css("z-index", 64000)
+        .click(function() {
+            var svg = $("#plot-div").find(".main-svg:first")[0];
+            var canvas = document.getElementById('download-canvas');
+            var ctx = canvas.getContext('2d');
+            var data = (new XMLSerializer()).serializeToString(svg);
+            var DOMURL = window.URL || window.webkitURL || window;
+
+            var img = new Image();
+            var svgBlob = new Blob([data], {type: 'image/svg+xml;charset=utf-8'});
+            var url = DOMURL.createObjectURL(svgBlob);
+
+            canvas.width = 1300;
+            canvas.height = 475;
+
+            img.onload = function () {
+                ctx.drawImage(img, 0, 0);
+                DOMURL.revokeObjectURL(url);
+
+                var imgURI = canvas
+                    .toDataURL('image/png')
+                    .replace('image/png', 'image/octet-stream');
+
+                triggerDownload(imgURI);
+            };
+
+            img.src = url;
+        });
+    plotDiv.prepend(downloadButton);
+
+    // Add the canvas
+    var downloadCanvas = $('<canvas></canvas>')
+        .attr("id", "download-canvas")
+        .css("width", $(document).width() - 150)
+        .css("height", 550)
+        .hide();
+    plotDiv.append(downloadCanvas);
+}
+
+function triggerDownload (imgURI) {
+    var evt = new MouseEvent('click', {
+        view: window,
+        bubbles: false,
+        cancelable: true
+    });
+
+    var a = document.createElement('a');
+    a.setAttribute('download', 'PredictionResults.png');
+    a.setAttribute('href', imgURI);
+    a.setAttribute('target', '_blank');
+
+    a.dispatchEvent(evt);
 }
 
 function processData(data) {
