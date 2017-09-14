@@ -270,7 +270,7 @@ var gpLib = function($, jqueryui, cookie) {
 
                 if(headerRow.length > 1)
                 {
-                    var list = headerRow[1].split(/\t/);
+                    var list = headerRow[1].trim().split(/\t/);
                     data[headerRow[0]] = list;
                 }
             }
