@@ -86,6 +86,7 @@ function addTableData(data, callThreshold) {
         tbody.append(row);
     }
 
+    updateTable(data, callThreshold);
     table_div.show();
 }
 
