@@ -4,7 +4,7 @@
 #Fri Dec 02 23:37:57 EDT 2016
 JVMLevel=1.6
 LSID=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.module.visualizer\:00019\:999999999
-version=JavaScript implementation of PredictionResultsViewer - fix for gpat-2228, 2300, 2232
+version=JavaScript implementation of PredictionResultsViewer
 
 author=Thorin Tabor (UC San Diego, Broad Institute)
 commandLine=prediction_results_viewer.html ? <prediction.results.file>
