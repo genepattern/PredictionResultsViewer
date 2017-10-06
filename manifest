@@ -27,7 +27,7 @@ p1_type=java.io.File
 p1_value=
 pipelineModel=
 privacy=public
-quality=production
+quality=preproduction
 requiredPatchLSIDs=urn\:lsid\:broadinstitute.org\:plugin\:GenePattern_3_9_1\:0.1,
 requiredPatchURLs=http\://software.broadinstitute.org/webservices/gpModuleRepository/download/dev/patch/?file\=/GenePattern_3_9_1/broadinstitute.org\:plugin/GenePattern_3_9_1/0.1/GenePattern_3_9_1.zip
 
