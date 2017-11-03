@@ -259,7 +259,7 @@ function addPlotData(data, Plotly, callThreshold) {
         x: data["Samples"],
         y: first_class_y,
         mode: 'markers',
-        type: 'scatter',
+        type: 'bar',
         name: 'ALL'
     };
 
@@ -267,7 +267,7 @@ function addPlotData(data, Plotly, callThreshold) {
         x: data["Samples"],
         y: second_class_y,
         mode: 'markers',
-        type: 'scatter',
+        type: 'bar',
         name: 'AML'
     };
 
