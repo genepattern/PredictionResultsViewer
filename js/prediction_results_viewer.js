@@ -242,6 +242,7 @@ function addPlotData(data, Plotly, callThreshold) {
     var first_class_y = [];
     var second_class_y = [];
     var first_class_name = data["Classes"][0];
+    var second_class_name = data["Classes"][1];
     for (var i = 0; i < data["Samples"].length; i++) {
         var true_class = data["True Class"][i];
         var confidence = data["Confidence"][i];
@@ -259,16 +260,16 @@ function addPlotData(data, Plotly, callThreshold) {
         x: data["Samples"],
         y: first_class_y,
         mode: 'markers',
-        type: 'scatter',
-        name: 'ALL'
+        type: 'bar',
+        name: first_class_name
     };
 
     var second_class = {
         x: data["Samples"],
         y: second_class_y,
         mode: 'markers',
-        type: 'scatter',
-        name: 'AML'
+        type: 'bar',
+        name: second_class_name
     };
 
     var call_threshold_pos = {
