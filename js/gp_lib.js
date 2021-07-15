@@ -11,9 +11,25 @@ var gpLib = function($, jqueryui, cookie) {
         if(token !== undefined && token !== null && token.length > 0)
         {
             token = token.substring(1);
-            gpAuthorizationHeaders = {"Authorization": "Bearer " + token, "X-Requested-With": "XMLHttpRequest"};
             $.ajaxSetup({
-                headers: gpAuthorizationHeaders
+                headers: {},
+                beforeSend: async function(xhr, settings) {
+                    if (!!window.location.hash) {
+                        const response = await fetch(settings.url, {
+                            method: 'HEAD',
+                            cache: 'no-cache',
+                            mode: 'cors',
+                            credentials: 'include',
+                            headers: {
+                                'Authorization': 'Bearer ' + token
+                            },
+                            redirect: 'follow'
+                        });
+
+                        if (!response.headers.has('x-amz-request-id')) // If not an S3 redirect, attach the authorization header
+                            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                    }
+                }
             });
         }
     });
