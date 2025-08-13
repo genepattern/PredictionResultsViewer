@@ -1,7 +1,7 @@
 #PredictionResultsViewer
 JVMLevel=1.6
 LSID=urn\:lsid\:broad.mit.edu\:cancer.software.genepattern.module.visualizer\:00019\:999999999
-version=Bug fix for S3 files
+version=Adding input file types to enable send-to from xvalidation results
 
 author=Thorin Tabor (UC San Diego, Broad Institute)
 commandLine=prediction_results_viewer.html ? <prediction.results.file>
